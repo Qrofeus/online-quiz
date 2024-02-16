@@ -1,4 +1,89 @@
-.buttton {
+.gameSelection, .gameBoard, .results {
+    max-width: min(100ch, 90%);
+    margin-inline: auto;
+}
+
+/* Game options selection */
+span {
+    flex-basis: 100%;
+}
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+
+    justify-content: center;
+    text-align: center;
+
+    .selected {
+        padding: 0.5em 1em;
+        min-width: 10ch;
+    }
+}
+
+.optionsButton {
     padding: 0.5em;
     border: 2px solid black;
+    border-radius: 5px;
+
+    cursor: pointer;
+    width: fit-content;
+
+    &:hover, &:focus {
+        background-color: black;
+        color: white;
+    }
+}
+
+.questionText {
+    padding: 0.5em 1em;
+    cursor: pointer;
+
+    &:hover, &:focus {
+        background-color: black;
+        color: white;
+    }
+}
+
+
+/* Alert Messages */
+.alert {
+    position: fixed;
+    bottom: 2rem;
+    left: 0;
+    right: 0;
+    opacity: 0.75;
+    width: fit-content;
+    margin-inline: auto;
+
+    text-align: center;
+    font-weight: 700;
+
+    padding: 0.5rem 2rem;
+    border-radius: 5px;
+}
+
+.info {
+    color: #059;
+    background-color: #bef;
+}
+
+.success {
+    color: #270;
+    background-color: #dff2bf;
+}
+
+.warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+
+.error {
+    color: #d8000c;
+    background-color: #ffbaba;
+}
+
+.hidden {
+    display: none;
 }
