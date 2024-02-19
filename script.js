@@ -1,13 +1,22 @@
 const CATEGORIESURL = 'https://opentdb.com/api_category.php';
+const WAIT_TIME = 2000;
+const MAX_QUESTIONS = 20;
+
 let correctAnswers = 0
 
 
 // Page setup
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
+    // Show loading categories alert
+    document.getElementById("loadCategoriesAlert").classList.remove("hidden");
     // Fetch categories from API
     fetch(CATEGORIESURL)
         .then(response => response.json())
         .then(data => {
+            // Hide loading categories alert
+            document.getElementById("loadCategoriesAlert").classList.add("hidden");
+            showSuccessAlert();
+
             const categories = data.trivia_categories;
             const categoriesDiv = document.getElementById('categories');
             categories.forEach(category => {
@@ -29,10 +38,10 @@ document.addEventListener("DOMContentLoaded", function() {
             const gameCategoryID = document.getElementById('selectedCategory').getAttribute('data-id');
             fetchQuestions(gameCategoryID, selectedDifficulty);
         } else {
-            alert('Please select a category and a difficulty level.');
+            showSelectionWarning();
         }
     });
-    
+
     // Click listener for difficulties selection
     const difficultiesContainer = document.getElementById('difficulties');
     const selectedDifficultyElement = document.getElementById('selectedDifficulty');
@@ -45,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+
 // Click listener for categories selection
 function selectCategory(categoryName, categoryId) {
     document.getElementById('selectedCategory').innerText = categoryName;
@@ -52,24 +62,24 @@ function selectCategory(categoryName, categoryId) {
 }
 
 async function fetchQuestions(gameCategoryID, gameDifficulty) {
-    const apiUrl = `https://opentdb.com/api.php?amount=20&category=${gameCategoryID}&difficulty=${gameDifficulty}&type=multiple`;
-    console.log(apiUrl);
+    document.getElementById("loadQuestionsAlert").classList.remove("hidden");
+    const apiUrl = `https://opentdb.com/api.php?amount=${MAX_QUESTIONS}&category=${gameCategoryID}&difficulty=${gameDifficulty}&type=multiple`;
 
     await fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
+            document.getElementById("loadQuestionsAlert").classList.add("hidden");
             const questions = data.results;
-            console.log(questions);
 
-            if(!questions.length) {
-                throw new Error("Zero questions returned");
+            if (!questions.length) {
+                throw new Error(`OpenTDB returned no questions for the current selection.
+                Category: ${gameCategoryID}, Difficulty: ${gameDifficulty}`);
             }
 
+            showSuccessAlert();
+            document.getElementById('gameSelection').classList.add('hidden');
+            
             const gameBoard = document.getElementById('gameBoard');
-            const gameSelection = document.getElementById('gameSelection');
-
-            gameSelection.classList.add('hidden');
             gameBoard.classList.remove('hidden');
 
             let questionIndex = 0;
@@ -78,28 +88,51 @@ async function fetchQuestions(gameCategoryID, gameDifficulty) {
             const option2 = document.getElementById('option2');
             const option3 = document.getElementById('option3');
             const option4 = document.getElementById('option4');
+            const submitButton = document.getElementById("submit");
 
             let correctChoice = '';
-            option1.addEventListener('click', handleAnswer);
-            option2.addEventListener('click', handleAnswer);
-            option3.addEventListener('click', handleAnswer);
-            option4.addEventListener('click', handleAnswer);
+            let selectedAnswer = '';
+            option1.addEventListener('click', selectOption);
+            option2.addEventListener('click', selectOption);
+            option3.addEventListener('click', selectOption);
+            option4.addEventListener('click', selectOption);
+            submitButton.addEventListener('click', checkAnswer);
 
-            function handleAnswer(event) {
-                const selectedAnswer = event.target.innerHTML;
+            function selectOption(event) {
+                resetOptionSelection();
+                selectedAnswer = event.target.innerHTML;
+                event.target.setAttribute("data-selected", true);
+            }
+
+            function checkAnswer() {
+                if (selectedAnswer === '') {
+                    showQuestionWarning();
+                    return;
+                }
+
                 if (selectedAnswer === correctChoice) {
                     correctAnswers++;
-                    alert('Correct!');
-                } else {
-                    alert('Incorrect!');
+                    showCorrectAlert();
                 }
-                console.log(selectedAnswer, correctChoice);
+                else {
+                    showWrongAlert();
+                }
                 questionIndex++;
-                displayQuestion(); // Display next question
+                displayQuestion();
+            }
+
+            function resetOptionSelection() {
+                option1.setAttribute("data-selected", false);
+                option2.setAttribute("data-selected", false);
+                option3.setAttribute("data-selected", false);
+                option4.setAttribute("data-selected", false);
+                selectedAnswer = '';
             }
 
             function displayQuestion() {
                 if (questionIndex < questions.length) {
+                    resetOptionSelection();
+
                     const question = questions[questionIndex];
                     questionText.innerHTML = `Question ${questionIndex + 1}: ${question.question}`;
 
@@ -116,17 +149,32 @@ async function fetchQuestions(gameCategoryID, gameDifficulty) {
                     correctChoice = decodeHtmlEntities(question.correct_answer);
                 } else {
                     // All questions answered
-                    alert('Quiz completed!');
-                    console.log(`${correctAnswers}/20`);
+                    gameBoard.classList.add("hidden");
+                    showResults();
                 }
             }
             displayQuestion();
         })
-        .catch(error => console.error('Error fetching questions:', error));
+        .catch((error) => {
+            showErrorAlert();
+            console.error('Error:', error);
+        });
+}
+
+function showResults() {
+    document.getElementById("results").classList.remove("hidden");
+    document.getElementById("resultText").innerText = `${correctAnswers} / ${MAX_QUESTIONS}`;
+
+    document.getElementById("tryAgain").addEventListener('click', resetQuiz);
+}
+
+function resetQuiz() {
+    document.getElementById("results").classList.add("hidden");
+    document.getElementById("gameSelection").classList.remove("hidden");
 }
 
 function decodeHtmlEntities(html) {
-    return html.replace(/&#(\d+);/g, function(match, dec) {
+    return html.replace(/&#(\d+);/g, function (match, dec) {
         return String.fromCharCode(dec);
     });
 }
@@ -138,7 +186,7 @@ function showSuccessAlert() {
     successAlert.classList.remove('hidden');
     setTimeout(() => {
         successAlert.classList.add('hidden');
-    }, 5000);
+    }, WAIT_TIME);
 }
 
 function showErrorAlert() {
@@ -146,21 +194,37 @@ function showErrorAlert() {
     failureAlert.classList.remove('hidden');
     setTimeout(() => {
         failureAlert.classList.add('hidden');
-    }, 5000);
+    }, WAIT_TIME);
 }
 
-function showWarningAlert() {
-    const warningAlert = document.getElementById('warning');
-    warningAlert.classList.remove('hidden');
+function showSelectionWarning() {
+    const selectionWarning = document.getElementById("selectionWarning");
+    selectionWarning.classList.remove("hidden");
     setTimeout(() => {
-        warningAlert.classList.add('hidden');
-    }, 5000)
+        selectionWarning.classList.add("hidden");
+    }, WAIT_TIME);
 }
 
-function showHelpAlert() {
-    const helpAlert = document.getElementById('helpAlert');
-    helpAlert.classList.remove('hidden');
+function showQuestionWarning() {
+    const questionWarning = document.getElementById("questionWarning");
+    questionWarning.classList.remove("hidden");
     setTimeout(() => {
-        helpAlert.classList.add('hidden');
-    }, 10000);
+        questionWarning.classList.add("hidden");
+    }, WAIT_TIME);
+}
+
+function showCorrectAlert() {
+    const correctAlert = document.getElementById("correct");
+    correctAlert.classList.remove("hidden");
+    setTimeout(() => {
+        correctAlert.classList.add("hidden");
+    }, WAIT_TIME);
+}
+
+function showWrongAlert() {
+    const wrongAlert = document.getElementById("wrong");
+    wrongAlert.classList.remove("hidden");
+    setTimeout(() => {
+        wrongAlert.classList.add("hidden");
+    }, WAIT_TIME);
 }

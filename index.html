@@ -41,6 +41,7 @@
         <div class="questionText" id="option2"></div>
         <div class="questionText" id="option3"></div>
         <div class="questionText" id="option4"></div>
+        <div class="btn" id="submit">Submit</div>
     </div>
 
     <div id="results" class="results hidden">
@@ -48,20 +49,21 @@
             <use href="#result"></use>
         </svg>
         <div id="resultText"></div>
+        <div class="btn" id="tryAgain">Try Again</div>
     </div>
 
     <!-- Alert Messages -->
-    <div class="alert info hidden" id="getCategoriesAlert">
+    <div class="alert info hidden" id="loadCategoriesAlert">
         <svg>
             <use href="#info"></use>
         </svg>
-        Fetching Category Names
+        Loading Categories...
     </div>
-    <div class="alert info hidden" id="getQuestionsAlert">
+    <div class="alert info hidden" id="loadQuestionsAlert">
         <svg>
             <use href="#info"></use>
         </svg>
-        Fetching Questions
+        Fetching Questions...
     </div>
     <div class="alert success hidden" id="success">
         <svg>
@@ -73,23 +75,22 @@
         <svg>
             <use href="#error"></use>
         </svg>
-        Something went wrong.
+        Something went wrong. Look at console errors for more information.
     </div>
-    <div class="alert warning hidden" id="warning">
+    <div class="alert warning hidden" id="selectionWarning">
         <svg>
             <use href="#info"></use>
         </svg>
-        Please select both: Category and Difficulty
+        Please select both: Category and Difficulty.
     </div>
-
-    <div class="help" id="helpButton">
+    <div class="alert warning hidden" id="questionWarning">
         <svg>
-            <use href="#question"></use>
+            <use href="#info"></use>
         </svg>
+        Please select an option.
     </div>
-    <div class="alert info hidden" id="helpAlert">
-        <!-- ToDo: Add help information here -->
-    </div>
+    <div class="alert correct hidden" id="correct">Correct Answer</div>
+    <div class="alert wrong hidden" id="wrong">Wrong Answer</div>
 
 
     <!-- SVGs -->

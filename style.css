@@ -46,6 +46,16 @@ span {
     }
 }
 
+[data-selected="true"] {
+    border: 2px solid red;
+}
+
+.btn {
+    padding: 0.5em;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
 
 /* Alert Messages */
 .alert {
