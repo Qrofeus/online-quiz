@@ -1,8 +1,32 @@
 const CATEGORIESURL = 'https://opentdb.com/api_category.php';
 const WAIT_TIME = 2000;
-const MAX_QUESTIONS = 20;
+const MAX_QUESTIONS = 10;
 
 let correctAnswers = 0
+
+// Theme Selector
+const rootElement = document.documentElement;
+const themeIcon = document.getElementById("themeIcon");
+
+// Theme Switch functions
+const enable_dark_mode = () => {
+    rootElement.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+    themeIcon.children[0].setAttribute("href", "#sun");
+};
+
+const disable_dark_mode = () => {
+    rootElement.setAttribute("data-theme", "light");
+    localStorage.setItem("theme", "light");
+    themeIcon.children[0].setAttribute("href", "#moon");
+};
+
+function switch_theme() {
+    let data_theme = rootElement.getAttribute("data-theme");
+
+    if (data_theme === "light") enable_dark_mode();
+    else disable_dark_mode();
+};
 
 
 // Page setup
@@ -34,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectedCategory = document.getElementById('selectedCategory').innerText.trim();
         const selectedDifficulty = document.getElementById('selectedDifficulty').innerText.trim().toLowerCase();
 
-        if (selectedCategory !== '' && selectedDifficulty !== '') {
+        if (selectedCategory !== 'Select a category' && selectedDifficulty !== 'Select a difficulty') {
             const gameCategoryID = document.getElementById('selectedCategory').getAttribute('data-id');
             fetchQuestions(gameCategoryID, selectedDifficulty);
         } else {
@@ -52,6 +76,9 @@ document.addEventListener("DOMContentLoaded", function () {
             selectedDifficultyElement.textContent = gameDifficulty;
         }
     });
+
+    themeIcon.addEventListener('click', switch_theme);
+    document.getElementById("tryAgain").addEventListener('click', resetQuiz);
 });
 
 
@@ -72,13 +99,12 @@ async function fetchQuestions(gameCategoryID, gameDifficulty) {
             const questions = data.results;
 
             if (!questions.length) {
-                throw new Error(`OpenTDB returned no questions for the current selection.
-                Category: ${gameCategoryID}, Difficulty: ${gameDifficulty}`);
+                throw new Error(`OpenTDB couldn't provide ${MAX_QUESTIONS} questions for the current selection. Category: ${gameCategoryID}, Difficulty: ${gameDifficulty}`);
             }
 
             showSuccessAlert();
             document.getElementById('gameSelection').classList.add('hidden');
-            
+
             const gameBoard = document.getElementById('gameBoard');
             gameBoard.classList.remove('hidden');
 
@@ -134,7 +160,7 @@ async function fetchQuestions(gameCategoryID, gameDifficulty) {
                     resetOptionSelection();
 
                     const question = questions[questionIndex];
-                    questionText.innerHTML = `Question ${questionIndex + 1}: ${question.question}`;
+                    questionText.innerHTML = `Q${questionIndex + 1}/${MAX_QUESTIONS}: ${question.question}`;
 
                     // Shuffle options
                     const options = [question.correct_answer, ...question.incorrect_answers];
@@ -164,8 +190,6 @@ async function fetchQuestions(gameCategoryID, gameDifficulty) {
 function showResults() {
     document.getElementById("results").classList.remove("hidden");
     document.getElementById("resultText").innerText = `${correctAnswers} / ${MAX_QUESTIONS}`;
-
-    document.getElementById("tryAgain").addEventListener('click', resetQuiz);
 }
 
 function resetQuiz() {

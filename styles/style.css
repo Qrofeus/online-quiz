@@ -1,0 +1,361 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+html {
+    scroll-behavior: smooth;
+}
+
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+    outline: transparent;
+}
+
+:root[data-theme="light"] {
+    --text: hsl(0, 0%, 0%);
+    --background: hsl(0, 0%, 100%);
+    --background-50: hsl(0, 0%, 95%);
+
+    --primary: hsl(46, 97%, 50%);
+    --secondary: hsl(229, 37%, 50%);
+    --accent: hsl(14, 90%, 50%);
+    --card-background: hsl(318, 28%, 88%);
+}
+
+:root[data-theme="dark"] {
+    --text: hsl(0, 0%, 100%);
+    --background: hsl(0, 0%, 0%);
+    --background-50: hsl(0, 0%, 10%);
+
+    --primary: hsl(46, 97%, 40%);
+    --secondary: hsl(229, 37%, 40%);
+    --accent: hsl(14, 90%, 40%);
+    --card-background: hsl(318, 28%, 58%);
+}
+
+:root {
+    --font-family: "Inter", Helvetica, Arial, sans-serif;
+    --fw-normal: 500;
+    --fw-medium: 600;
+    --fw-large: 700;
+
+    --fc-light: hsl(0, 0%, 100%);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+
+    font-family: var(--font-family);
+    font-weight: var(--fw-normal);
+    line-height: 1.5;
+
+    background: var(--background);
+    color: var(--text);
+}
+
+a,
+button {
+    all: unset;
+}
+
+a,
+#themeIcon {
+    cursor: pointer;
+}
+
+header {
+    z-index: 1;
+    position: sticky;
+    top: 0;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0.5em;
+    font-weight: var(--fw-large);
+
+    background: var(--background);
+    transition: all ease-in-out 200ms;
+
+    svg:hover,
+    svg:focus {
+        color: var(--primary);
+    }
+
+    .navText {
+        position: relative;
+        color: var(--accent);
+
+        &:hover,
+        &:focus {
+            color: var(--text);
+        }
+
+        &:after {
+            content: "";
+            position: absolute;
+            left: -25%;
+            bottom: -0.5em;
+
+            height: 3px;
+            border-radius: 3px;
+            width: 150%;
+
+            transform: scaleX(0);
+            transform-origin: center;
+
+            background-color: var(--accent);
+            transition: transform ease-in-out 200ms;
+        }
+
+        &:hover::after,
+        &:focus::after {
+            font-weight: var(--fw-large);
+            transform: scaleX(1);
+        }
+    }
+}
+
+svg {
+    height: 2em;
+    width: 2em;
+}
+
+.btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-inline: auto;
+
+    padding: 0.5em 1em;
+    gap: 0.5em;
+    
+    width: fit-content;
+    height: fit-content;
+    font-weight: var(--fw-medium);
+
+    background: var(--secondary);
+    color: var(--fc-light);
+
+    cursor: pointer;
+    border-radius: 5px;
+
+    &:hover,
+    &:focus {
+        background-color: var(--accent);
+    }
+}
+
+section {
+    min-height: 90svh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding-block: 3em;
+
+    span {
+        font-weight: var(--fw-large);
+        font-size: 1.5em;
+    }
+}
+
+.wrapper {
+    max-width: min(80ch, 90%);
+    margin-inline: auto;
+}
+
+/* Game options selection */
+.introduction {
+    text-align: center;
+    text-wrap: pretty;
+
+    background: var(--background-50);
+    padding: 4em 1em;
+}
+
+.quizIcons {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: center;
+    gap: 1em;
+
+    .quizIcon {
+        padding: 2em;
+        border-radius: 5px;
+
+        &:nth-child(1) {
+            background: var(--primary);
+        }
+
+        &:nth-child(2) {
+            background: var(--secondary);
+        }
+
+        &:nth-child(3) {
+            background: var(--accent);
+        }
+
+        &:nth-child(4) {
+            background: var(--card-background);
+        }
+
+        svg {
+            width: 5em;
+            height: 5em;
+        }
+    }
+}
+
+.optionsButton {
+    padding: 0.5em 1em;
+    background: var(--primary);
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+        background-color: var(--secondary);
+        color: white;
+    }
+}
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+
+    padding: 1em 0em;
+}
+
+.selected {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+
+    .selectedText {
+        margin-block: 1em;
+        background-color: var(--background-50);
+        border-radius: 4px;
+        border: 1px solid var(--text);
+
+        pointer-events: none;
+        font-weight: var(--fw-medium);
+
+        padding: 0.5em 1em;
+        opacity: 0.5;
+        flex: 1;
+    }
+}
+
+/* GameBoard */
+#gameBoard .btn {
+    margin-top: 0.75em;
+}
+
+.question {
+    font-weight: var(--fw-large);
+    pointer-events: none;
+}
+
+.text {
+    padding: 0.5em 1em;
+    border-radius: 5px;
+}
+
+.questionsOption {
+    cursor: pointer;
+    margin-block: 0.25em;
+    border: 1px dotted var(--text);
+
+    transform: scaleX(1);
+    transition: all ease-out 200ms;
+
+    &:hover,
+    &:focus {
+        background-color: var(--secondary);
+        color: var(--fc-light);
+    }
+}
+
+[data-selected="true"] {
+    background: var(--primary);
+    transform: scaleX(1.02);
+}
+
+/* Results Screen */
+.results {
+    background: var(--background-50);
+    border-radius: 5px;
+    padding: 2em 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    span {
+        color: var(--primary);
+    }
+
+    .score {
+        margin-bottom: 0.5em;
+
+        color: var(--accent);
+        font-weight: var(--fw-large);
+        font-size: 3em;
+    }
+}
+
+/* Alert Messages */
+.alert {
+    position: fixed;
+
+    inset: 90vh 0 0 0;
+    opacity: 0.75;
+
+    width: fit-content;
+    height: fit-content;
+    margin-inline: auto;
+
+    font-weight: var(--fw-large);
+
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+
+    padding: 0.5rem 2rem;
+    border-radius: 5px;
+}
+
+.info {
+    color: #059;
+    background-color: #bef;
+}
+
+.success {
+    color: #270;
+    background-color: #dff2bf;
+}
+
+.warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+
+.error {
+    color: #d8000c;
+    background-color: #ffbaba;
+}
+
+.hidden {
+    display: none;
+    pointer-events: none;
+}
